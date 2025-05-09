@@ -2,9 +2,10 @@
 import React, { useEffect, useState } from "react";
 import { useQueue } from "@/contexts/QueueContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Clock } from "lucide-react";
 
 const QueueDisplay: React.FC = () => {
-  const { currentNumber, lastTicket } = useQueue();
+  const { currentNumber, lastTicket, estimatedWaitTime } = useQueue();
   const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
@@ -14,6 +15,8 @@ const QueueDisplay: React.FC = () => {
   }, [currentNumber]);
 
   const waitingCount = lastTicket - currentNumber;
+  const myTicket = lastTicket > 0 ? lastTicket : null;
+  const waitTimeForLatest = myTicket ? estimatedWaitTime(myTicket) : 0;
 
   return (
     <div className="space-y-8">
@@ -47,6 +50,29 @@ const QueueDisplay: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {waitTimeForLatest > 0 && (
+        <Card className="w-full shadow-md border-butcher-light">
+          <CardHeader className="bg-butcher-light p-3">
+            <CardTitle className="flex items-center text-lg text-butcher-dark">
+              <Clock size={20} className="mr-2" />
+              Tempo de espera estimado
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500">Sua senha</p>
+                <p className="text-2xl font-bold">{myTicket}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Tempo aprox.</p>
+                <p className="text-2xl font-bold">{waitTimeForLatest} min</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
